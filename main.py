@@ -74,15 +74,12 @@ Github  github.com/kichi779
         7: "https://www.croxyproxy.net",
     }
 
-    # Fetch values from environment variables (for Render)
+    # Fetch values from environment variables
     proxy_choice = int(os.getenv("PROXY_CHOICE", 1))
     twitch_username = os.getenv("TWITCH_USERNAME", "Kichi779")
     proxy_count = int(os.getenv("PROXY_COUNT", 3))
 
-    proxy_url = proxy_servers.get(proxy_choice)
-    if not proxy_url:
-        print(f"Invalid proxy choice {proxy_choice}, using default 1")
-        proxy_url = proxy_servers[1]
+    proxy_url = proxy_servers.get(proxy_choice, proxy_servers[1])
 
     print(Colorate.Vertical(Colors.green_to_blue,
         f"Using Proxy Server {proxy_choice}: {proxy_url}"))
@@ -90,9 +87,6 @@ Github  github.com/kichi779
         f"Channel: {twitch_username} | Windows of proxy to open: {proxy_count}"))
 
     # Chrome setup
-    chrome_path = os.getenv("CHROME_PATH", "/usr/bin/google-chrome")
-    driver_path = os.getenv("CHROMEDRIVER_PATH", "chromedriver")  # chromedriver в PATH
-
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
     chrome_options.add_argument('--disable-logging')
@@ -101,12 +95,12 @@ Github  github.com/kichi779
     chrome_options.add_argument("--mute-audio")
     chrome_options.add_argument('--disable-dev-shm-usage')
 
-    # Optional: Adblock extension if exists
+    # Optional: Adblock extension
     extension_path = os.getenv("ADBLOCK_PATH", "adblock.crx")
     if os.path.exists(extension_path):
         chrome_options.add_extension(extension_path)
 
-    # Создаем Service объект для Selenium 4+
+    driver_path = os.getenv("CHROMEDRIVER_PATH", "chromedriver")  # chromedriver должен быть в PATH
     service = Service(executable_path=driver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.get(proxy_url)
