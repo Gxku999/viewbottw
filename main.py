@@ -97,6 +97,7 @@ Github  github.com/kichi779
     if os.path.exists(extension_path):
         options.add_extension(extension_path)
 
+    # Создаём драйвер (Chromium автоматически скачивается)
     driver = uc.Chrome(options=options)
     driver.get(proxy_url)
 
