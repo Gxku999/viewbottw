@@ -1,7 +1,6 @@
+requests
+selenium
 colorama
 pystyle
-selenium
-requests
 undetected-chromedriver
-
-
+setuptools
