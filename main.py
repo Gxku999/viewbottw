@@ -10,6 +10,7 @@ import time
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+# --------------------- Функции обновления и объявлений ---------------------
 def check_for_updates():
     try:
         r = requests.get(
@@ -35,6 +36,7 @@ def get_announcement():
     except:
         return "No announcement available."
 
+# --------------------- Основная функция ---------------------
 def main():
     if not check_for_updates():
         return
@@ -42,7 +44,7 @@ def main():
     announcement = get_announcement()
 
     print(Colorate.Vertical(Colors.green_to_cyan, Center.XCenter("""
-           
+       
                        ▄█   ▄█▄  ▄█    ▄████████    ▄█    █▄     ▄█  
                        ███ ▄███▀ ███   ███    ███   ███    ███   ███  
                        ███▐██▀   ███▌  ███    █▀    ███    ███   ███▌ 
@@ -62,7 +64,7 @@ Github  github.com/kichi779
     print(Colors.yellow, Center.XCenter(f"{announcement}"))
     print("")
 
-    # Proxy servers dictionary
+    # --------------------- Настройка прокси ---------------------
     proxy_servers = {
         1: "https://www.blockaway.net",
         2: "https://www.croxyproxy.com",
@@ -73,7 +75,6 @@ Github  github.com/kichi779
         7: "https://www.croxyproxy.net",
     }
 
-    # Fetch values from environment variables
     proxy_choice = int(os.getenv("PROXY_CHOICE", 1))
     twitch_username = os.getenv("TWITCH_USERNAME", "Kichi779")
     proxy_count = int(os.getenv("PROXY_COUNT", 3))
@@ -85,26 +86,29 @@ Github  github.com/kichi779
     print(Colorate.Vertical(Colors.cyan_to_blue,
         f"Channel: {twitch_username} | Windows of proxy to open: {proxy_count}"))
 
-    # Настройка undetected-chromedriver
+    # --------------------- Настройка undetected-chromedriver ---------------------
     options = uc.ChromeOptions()
     options.headless = True
     options.add_argument("--mute-audio")
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.binary_location = "/usr/bin/chromium-browser"  # путь к Chromium на Render
 
-    # Adblock extension (опционально)
+    # Adblock (опционально)
     extension_path = os.getenv("ADBLOCK_PATH", "adblock.crx")
     if os.path.exists(extension_path):
         options.add_extension(extension_path)
 
-    # Создаём драйвер (Chromium автоматически скачивается)
+    # Запуск драйвера
     driver = uc.Chrome(options=options)
     driver.get(proxy_url)
 
+    # --------------------- Открываем окна с прокси и Twitch ---------------------
     for i in range(proxy_count):
-        driver.execute_script("window.open('" + proxy_url + "')")
-        driver.switch_to.window(driver.window_handles[-1])
-        driver.get(proxy_url)
+        if i > 0:
+            driver.execute_script("window.open('" + proxy_url + "')")
+            driver.switch_to.window(driver.window_handles[-1])
+            driver.get(proxy_url)
 
         try:
             text_box = driver.find_element(By.ID, 'url')
@@ -115,6 +119,7 @@ Github  github.com/kichi779
 
     print(Colorate.Vertical(Colors.red_to_blue,
         "Viewers have all been sent. The program will close."))
+
     driver.quit()
 
 if __name__ == '__main__':
