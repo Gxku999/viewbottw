@@ -1,15 +1,12 @@
 import requests
 import warnings
-from selenium import webdriver
+import undetected_chromedriver as uc
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from colorama import Fore
 from pystyle import Center, Colors, Colorate
 import os
 import time
-from webdriver_manager.chrome import ChromeDriverManager
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -88,24 +85,19 @@ Github  github.com/kichi779
     print(Colorate.Vertical(Colors.cyan_to_blue,
         f"Channel: {twitch_username} | Windows of proxy to open: {proxy_count}"))
 
-    # Chrome setup
-    chrome_options = Options()
-    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    chrome_options.add_argument('--disable-logging')
-    chrome_options.add_argument('--log-level=3')
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument("--mute-audio")
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
+    # Настройка undetected-chromedriver
+    options = uc.ChromeOptions()
+    options.headless = True
+    options.add_argument("--mute-audio")
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
 
-    # Optional: Adblock extension
+    # Adblock extension (опционально)
     extension_path = os.getenv("ADBLOCK_PATH", "adblock.crx")
     if os.path.exists(extension_path):
-        chrome_options.add_extension(extension_path)
+        options.add_extension(extension_path)
 
-    # Используем webdriver-manager для автоматического скачивания ChromeDriver
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = uc.Chrome(options=options)
     driver.get(proxy_url)
 
     for i in range(proxy_count):
