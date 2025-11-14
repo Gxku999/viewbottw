@@ -3,6 +3,7 @@ import warnings
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 from colorama import Fore
 from pystyle import Center, Colors, Colorate
 import os
@@ -25,7 +26,6 @@ def check_for_updates():
     except:
         return True
 
-
 def get_announcement():
     try:
         r = requests.get(
@@ -36,15 +36,11 @@ def get_announcement():
     except:
         return "No announcement available."
 
-
 def main():
     if not check_for_updates():
         return
 
     announcement = get_announcement()
-
-    # Windows-specific title removed for Linux compatibility
-    # os.system(f"title Kichi779 - Twitch Viewer Bot @kichi#0779 ")
 
     print(Colorate.Vertical(Colors.green_to_cyan, Center.XCenter("""
            
@@ -95,7 +91,7 @@ Github  github.com/kichi779
 
     # Chrome setup
     chrome_path = os.getenv("CHROME_PATH", "/usr/bin/google-chrome")
-    driver_path = os.getenv("CHROMEDRIVER_PATH", "chromedriver")  # assume chromedriver is in PATH
+    driver_path = os.getenv("CHROMEDRIVER_PATH", "chromedriver")  # chromedriver в PATH
 
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -110,7 +106,9 @@ Github  github.com/kichi779
     if os.path.exists(extension_path):
         chrome_options.add_extension(extension_path)
 
-    driver = webdriver.Chrome(executable_path=driver_path, options=chrome_options)
+    # Создаем Service объект для Selenium 4+
+    service = Service(executable_path=driver_path)
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.get(proxy_url)
 
     for i in range(proxy_count):
@@ -128,7 +126,6 @@ Github  github.com/kichi779
     print(Colorate.Vertical(Colors.red_to_blue,
         "Viewers have all been sent. The program will close."))
     driver.quit()
-
 
 if __name__ == '__main__':
     main()
