@@ -92,15 +92,16 @@ Github  github.com/kichi779
     options.add_argument("--mute-audio")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.binary_location = "/usr/bin/chromium-browser"  # путь к Chromium на Render
+
+    # Указываем путь к Chromium, установленному через apt
+    chromium_path = "/usr/bin/chromium-browser"
+    driver = uc.Chrome(options=options, browser_executable_path=chromium_path)
 
     # Adblock (опционально)
     extension_path = os.getenv("ADBLOCK_PATH", "adblock.crx")
     if os.path.exists(extension_path):
         options.add_extension(extension_path)
 
-    # Запуск драйвера
-    driver = uc.Chrome(options=options)
     driver.get(proxy_url)
 
     # --------------------- Открываем окна с прокси и Twitch ---------------------
