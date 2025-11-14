@@ -4,10 +4,12 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from colorama import Fore
 from pystyle import Center, Colors, Colorate
 import os
 import time
+from webdriver_manager.chrome import ChromeDriverManager
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -87,12 +89,13 @@ Github  github.com/kichi779
         f"Channel: {twitch_username} | Windows of proxy to open: {proxy_count}"))
 
     # Chrome setup
-    chrome_options = webdriver.ChromeOptions()
+    chrome_options = Options()
     chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
     chrome_options.add_argument('--disable-logging')
     chrome_options.add_argument('--log-level=3')
     chrome_options.add_argument('--headless')
     chrome_options.add_argument("--mute-audio")
+    chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
 
     # Optional: Adblock extension
@@ -100,8 +103,8 @@ Github  github.com/kichi779
     if os.path.exists(extension_path):
         chrome_options.add_extension(extension_path)
 
-    driver_path = os.getenv("CHROMEDRIVER_PATH", "chromedriver")  # chromedriver должен быть в PATH
-    service = Service(executable_path=driver_path)
+    # Используем webdriver-manager для автоматического скачивания ChromeDriver
+    service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.get(proxy_url)
 
